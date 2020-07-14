@@ -106,6 +106,7 @@ public class Controller : MonoBehaviour
         if (isRecord)
         {
             PlayerPrefs.SetInt("record", score);
+            PlayerPrefs.SetInt("modeindex", (int)CurrentPlaymode);
             PlayerPrefs.Save();
         }
     }
