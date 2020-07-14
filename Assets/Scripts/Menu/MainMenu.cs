@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+
 public class MainMenu : MonoBehaviour
 {
     public string[] modes = new string[] {"EASY", "HARD", "ULTRA", "INSANE"};
