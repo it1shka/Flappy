@@ -8,7 +8,7 @@ using System.Web;
 
 public class HighscoreTable : MonoBehaviour
 {
-    private string url = "http://localhost:5000";
+    private string url = "http://178.122.131.254:5000";
     public TextMeshProUGUI highscoreTMP;
     public TMP_InputField nameINP;
     public GameObject error;
@@ -16,6 +16,7 @@ public class HighscoreTable : MonoBehaviour
 
     public GameObject highscorePanelPrefab;
     public RectTransform canvas;
+
     void Awake()
     {
         var highscore = PlayerPrefs.GetInt("record");
