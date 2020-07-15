@@ -9,19 +9,31 @@ using System.Web;
 public class HighscoreTable : MonoBehaviour
 {
     private string url = "http://localhost:5000";
-    public TextMeshProUGUI nameTMP, highscoreTMP;
+    public TextMeshProUGUI highscoreTMP;
+    public TMP_InputField nameINP;
     public GameObject error;
     private HighscoreInfo highscoreInfo;
+
+    public GameObject highscorePanelPrefab;
+    public RectTransform canvas;
     void Awake()
     {
         var highscore = PlayerPrefs.GetInt("record");
+        var pushedhighscore = PlayerPrefs.GetInt("pushedrecord");
         var name = PlayerPrefs.GetString("nickname");
         var mode = PlayerPrefs.GetInt("modeindex");
         highscoreInfo = new HighscoreInfo(name, highscore, mode);
-        nameTMP.text = name;
+        nameINP.onEndEdit.AddListener(delegate { INPOnEnd(); });
+        nameINP.text = name;
         highscoreTMP.text = $"{highscore}";
 
-        StartCoroutine(SendHighscore());
+        if (highscore > pushedhighscore)
+        {
+
+            StartCoroutine(SendHighscore());
+            PlayerPrefs.SetInt("pushedrecord", highscore);
+            PlayerPrefs.Save();
+        }
         StartCoroutine(getTable());
     }
     
@@ -37,7 +49,9 @@ public class HighscoreTable : MonoBehaviour
         foreach(var elem in output)
         {
             var curInfo = JsonConvert.DeserializeObject<HighscoreInfo>(elem.info);
-            print(curInfo.score);
+            Instantiate(highscorePanelPrefab, canvas)
+                .GetComponent<HighscorePanel>()
+                .Set(curInfo);
         }
 
     }
@@ -51,6 +65,19 @@ public class HighscoreTable : MonoBehaviour
         if (r.isNetworkError)
             error.SetActive(true);
     }
+
+    public void INPOnEnd()
+    {
+        if(nameINP.text.Length > 0)
+        {
+            PlayerPrefs.SetString("nickname", nameINP.text);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            nameINP.text = PlayerPrefs.GetString("nickname");
+        }
+    }
 }
 
 [System.Serializable]
@@ -61,7 +88,7 @@ public class HighscoreInfo
     public int playmodeIndex;
     public HighscoreInfo(string playerName, int playerScore, int playmodeIndex)
     {
-        this.name = playerName == "" ? "Player" : playerName;
+        this.name = playerName;
         this.score = playerScore;
         this.playmodeIndex = playmodeIndex;
     }

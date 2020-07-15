@@ -6,7 +6,8 @@ public class Test : MonoBehaviour
 {
     void Awake()
     {
-        PlayerPrefs.SetInt("record", 0);
+        PlayerPrefs.SetString("nickname", "");
+        PlayerPrefs.SetInt("pushedrecord", 0);
         PlayerPrefs.Save();
     }
 
