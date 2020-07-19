@@ -8,7 +8,7 @@ using System.Web;
 
 public class HighscoreTable : MonoBehaviour
 {
-    private string url = "http://178.122.131.254:5000";
+    private string url = "https://finalflappyserver.oa.r.appspot.com/";
     public TextMeshProUGUI highscoreTMP;
     public TMP_InputField nameINP;
     public GameObject error;
@@ -17,8 +17,14 @@ public class HighscoreTable : MonoBehaviour
     public GameObject highscorePanelPrefab;
     public RectTransform canvas;
 
-    void Awake()
+    private void Awake()
     {
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        print("connecting...");
         var highscore = PlayerPrefs.GetInt("record");
         var pushedhighscore = PlayerPrefs.GetInt("pushedrecord");
         var name = PlayerPrefs.GetString("nickname");
@@ -27,36 +33,46 @@ public class HighscoreTable : MonoBehaviour
         nameINP.onEndEdit.AddListener(delegate { INPOnEnd(); });
         nameINP.text = name;
         highscoreTMP.text = $"{highscore}";
-
+        
         if (highscore > pushedhighscore)
         {
-
-            StartCoroutine(SendHighscore());
+            StartCoroutine(getTable(true));
             PlayerPrefs.SetInt("pushedrecord", highscore);
             PlayerPrefs.Save();
         }
-        StartCoroutine(getTable());
+        else StartCoroutine(getTable(false));
     }
     
-    private IEnumerator getTable()
+    private IEnumerator getTable(bool sendHighscore)
     {
+        if (sendHighscore)
+        {
+            var serializedObj = JsonConvert.SerializeObject(highscoreInfo);
+            var p = UnityWebRequest.Post(url, serializedObj);
+
+            yield return p.SendWebRequest();
+            if (p.isNetworkError)
+                error.SetActive(true);
+
+            print("Inserting feedback:" + p.downloadHandler.text);
+        }
+
         var r = UnityWebRequest.Get(url);
         yield return r.SendWebRequest();
         if (r.isNetworkError)
             error.SetActive(true);
         var result = r.downloadHandler.text;
         print($"Got a json pack: {result}");
-        var output = JsonConvert.DeserializeObject<HighscoreInfoOutput[]>(result);
+
+        var output = JsonConvert.DeserializeObject<HighscoreInfo[]>(result);
         foreach(var elem in output)
         {
-            var curInfo = JsonConvert.DeserializeObject<HighscoreInfo>(elem.info);
             Instantiate(highscorePanelPrefab, canvas)
                 .GetComponent<HighscorePanel>()
-                .Set(curInfo);
+                .Set(elem);
         }
-
     }
-
+    /*
     private IEnumerator SendHighscore()
     {
         var serializedObj = JsonConvert.SerializeObject(highscoreInfo);
@@ -65,8 +81,10 @@ public class HighscoreTable : MonoBehaviour
         yield return r.SendWebRequest();
         if (r.isNetworkError)
             error.SetActive(true);
-    }
 
+        print("Inserting feedback:" + r.downloadHandler.text);
+    }
+    */
     public void INPOnEnd()
     {
         if(nameINP.text.Length > 0)
@@ -94,10 +112,10 @@ public class HighscoreInfo
         this.playmodeIndex = playmodeIndex;
     }
 }
-
+/*
 [System.Serializable]
 public class HighscoreInfoOutput
 {
     public string info;
     public string _id;
-}
+}*/
