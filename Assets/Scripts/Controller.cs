@@ -32,7 +32,9 @@ public class Controller : MonoBehaviour
     public float invisibleTime = 5f;
     public SpriteRenderer myRend;
     public LineRenderer myLine;
-    public Material indicateMat, defMat, defLineMat;
+    public Material indicateMat, indicateLineMat, defMat, defLineMat;
+
+    public AudioManager audioManager;
 
     private void Awake()
     {
@@ -49,6 +51,8 @@ public class Controller : MonoBehaviour
         Physics2D.gravity = new Vector2(0f, -9.81f);
 
         CurrentPlaymode = (PLAYMODE)PlayerPrefs.GetInt("currentmode");
+        if (!audioManager)
+            audioManager = FindObjectOfType<AudioManager>();
     }
 
     void Update()
@@ -82,6 +86,8 @@ public class Controller : MonoBehaviour
 
     private void Jump()
     {
+        audioManager.Play("jump");
+
         switch (CurrentMode) {
             case MODE.NORMAL:
             case MODE.FULLREVERSE2:
@@ -118,6 +124,8 @@ public class Controller : MonoBehaviour
 
     public void Death()
     {
+        audioManager.Play("explosion2");
+
         if (deathEffect)
             Instantiate(deathEffect, transform.position, Quaternion.identity);
         FindObjectOfType<DeathMenuInvoker>().InvokeDeathMenu();
@@ -141,7 +149,7 @@ public class Controller : MonoBehaviour
     {
         myCollider.enabled = false;
         myRend.material = indicateMat;
-        myLine.material = indicateMat;
+        myLine.material = indicateLineMat;
         yield return new WaitForSeconds(invisibleTime);
         myCollider.enabled = true;
         myRend.material = defMat;
@@ -161,6 +169,8 @@ public class Controller : MonoBehaviour
         curSwitchCount--;
         if (curSwitchCount <= 0)
         {
+            audioManager.Play("powerup");
+
             wallSpawner.IncreaseSpeed();
             curSwitchCount = switchCount;
 
