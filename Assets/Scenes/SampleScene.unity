@@ -3762,7 +3762,7 @@ MonoBehaviour:
   invisibleTime: 5
   myRend: {fileID: 1987763520}
   myLine: {fileID: 1987763516}
-  indicateMat: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  indicateMat: {fileID: 2100000, guid: 5bbd36b8e99897249830ff5fd39269ca, type: 2}
   indicateLineMat: {fileID: 2100000, guid: 5bbd36b8e99897249830ff5fd39269ca, type: 2}
   defMat: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   defLineMat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}

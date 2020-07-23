@@ -45,22 +45,43 @@ public class HighscoreTable : MonoBehaviour
     
     private IEnumerator getTable(bool sendHighscore)
     {
+        var myId = PlayerPrefs.GetString("id");
+        if (myId == "")
+        {
+            var rg = UnityWebRequest.Get($"{url}/id");
+            yield return rg.SendWebRequest();
+            if (rg.isNetworkError)
+            {
+                error.SetActive(true);
+                yield break;
+            }
+            var myNewId = rg.downloadHandler.text;
+            PlayerPrefs.SetString("id", myNewId);
+            PlayerPrefs.Save();
+            myId = myNewId;
+        }
+        highscoreInfo.id = myId;
+
         if (sendHighscore)
         {
             var serializedObj = JsonConvert.SerializeObject(highscoreInfo);
             var p = UnityWebRequest.Post(url, serializedObj);
 
             yield return p.SendWebRequest();
-            if (p.isNetworkError)
+            if (p.isNetworkError) {
                 error.SetActive(true);
+                yield break;
+            }
 
             print("Inserting feedback:" + p.downloadHandler.text);
         }
 
         var r = UnityWebRequest.Get(url);
         yield return r.SendWebRequest();
-        if (r.isNetworkError)
+        if (r.isNetworkError) {
             error.SetActive(true);
+            yield break;
+        }
         var result = r.downloadHandler.text;
         print($"Got a json pack: {result}");
 
@@ -69,7 +90,7 @@ public class HighscoreTable : MonoBehaviour
         {
             Instantiate(highscorePanelPrefab, canvas)
                 .GetComponent<HighscorePanel>()
-                .Set(elem);
+                .Set(elem, myId);
         }
     }
     /*
@@ -105,11 +126,14 @@ public class HighscoreInfo
     public string name;
     public int score;
     public int playmodeIndex;
+
+    public string id;
     public HighscoreInfo(string playerName, int playerScore, int playmodeIndex)
     {
         this.name = playerName;
         this.score = playerScore;
         this.playmodeIndex = playmodeIndex;
+        id = "";
     }
 }
 /*

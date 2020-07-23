@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.26415092, g: 0.26415092, b: 0.26415092, a: 1}
+  m_Color: {r: 0.2627451, g: 0.2627451, b: 0.2627451, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -177,6 +177,9 @@ MonoBehaviour:
   nameTMP: {fileID: 5003843664275152579}
   scoreTMP: {fileID: 199227821686254574}
   modeTMP: {fileID: 8609324918161815376}
+  myPanelImg: {fileID: 9114610070865039731}
+  myColor: {r: 1, g: 0.74634147, b: 0, a: 1}
+  notMyColor: {r: 0.2627451, g: 0.2627451, b: 0.2627451, a: 1}
 --- !u!1 &2580672198377209694
 GameObject:
   m_ObjectHideFlags: 0
