@@ -9,6 +9,8 @@ public class Continuer : MonoBehaviour
     public PostProcessorSettings pps;
     public int count = 3;
 
+    public AudioManager audioManager;
+
     public void Continue(bool disable)
     {
         StartCoroutine(CountDown(disable));
@@ -22,6 +24,7 @@ public class Continuer : MonoBehaviour
         for(var i=0; i < count; i++)
         {
             tmp.text = $"{count - i}";
+            audioManager.Play("pip");
             yield return new WaitForSecondsRealtime(1f);
         }
         Time.timeScale = 1f;
@@ -30,6 +33,7 @@ public class Continuer : MonoBehaviour
         defaultUI.SetActive(true);
         if(disable)
             FindObjectOfType<Controller>().DisableCollider();
+        audioManager.Play("blip");
     }
 
 }

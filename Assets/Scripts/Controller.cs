@@ -165,6 +165,7 @@ public class Controller : MonoBehaviour
         {
             isRecord = true;
             recordText.SetActive(true);
+            audioManager.Play("record");
         }
         curSwitchCount--;
         if (curSwitchCount <= 0)

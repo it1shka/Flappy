@@ -10,6 +10,8 @@ public class MainMenu : MonoBehaviour
     public TextMeshProUGUI tmp;
     void Start()
     {
+        //ашч игп bug fix
+        Time.timeScale = 1f;
 
         currentMode = PlayerPrefs.GetInt("currentmode")-1;
         PickMode();
@@ -27,5 +29,15 @@ public class MainMenu : MonoBehaviour
     public void Play()
     {
         Application.LoadLevel("SampleScene");
+    }
+
+    public void QuitApp()
+    {
+        Application.Quit();
+    }
+
+    public void OpenGitHub()
+    {
+        Application.OpenURL("https://github.com/it1shka/Flappy");
     }
 }
