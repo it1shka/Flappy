@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
+
+//IL2CPP does not support Newtonsoft.Json... Blyat
 using Newtonsoft.Json;
 using System.Web;
 
@@ -11,7 +13,7 @@ public class HighscoreTable : MonoBehaviour
     private string url = "https://finalflappyserver.oa.r.appspot.com/";
     public TextMeshProUGUI highscoreTMP;
     public TMP_InputField nameINP;
-    public GameObject error;
+    public TextMeshProUGUI error, additionalError;
     private HighscoreInfo highscoreInfo;
 
     public GameObject highscorePanelPrefab;
@@ -45,6 +47,7 @@ public class HighscoreTable : MonoBehaviour
     
     private IEnumerator getTable(bool sendHighscore)
     {
+        SetStatus("Connecting to my server...", "Please wait");
         var myId = PlayerPrefs.GetString("id");
         if (myId == "")
         {
@@ -52,9 +55,10 @@ public class HighscoreTable : MonoBehaviour
             yield return rg.SendWebRequest();
             if (rg.isNetworkError)
             {
-                error.SetActive(true);
+                SetStatus("Unable to send GET_ID req", "Check your internet connection");
                 yield break;
             }
+            SetStatus("Got an id", "Done!");
             var myNewId = rg.downloadHandler.text;
             PlayerPrefs.SetString("id", myNewId);
             PlayerPrefs.Save();
@@ -69,29 +73,46 @@ public class HighscoreTable : MonoBehaviour
 
             yield return p.SendWebRequest();
             if (p.isNetworkError) {
-                error.SetActive(true);
+                SetStatus("Unable to send POST_SCORE req", "Check your internet connection");
                 yield break;
             }
-
+            SetStatus("Sent your highscore", "Done!");
             print("Inserting feedback:" + p.downloadHandler.text);
         }
 
         var r = UnityWebRequest.Get(url);
         yield return r.SendWebRequest();
         if (r.isNetworkError) {
-            error.SetActive(true);
+            SetStatus("Unable to send GET_TABLE req", "Check your internet connection");
             yield break;
         }
-        var result = r.downloadHandler.text;
-        print($"Got a json pack: {result}");
+        SetStatus("Got a responce", "Done!");
 
-        var output = JsonConvert.DeserializeObject<HighscoreInfo[]>(result);
-        foreach(var elem in output)
+        try
         {
-            Instantiate(highscorePanelPrefab, canvas)
-                .GetComponent<HighscorePanel>()
-                .Set(elem, myId);
+            var result = r.downloadHandler.text;
+            print($"Got a json pack: {result}");
+
+            var output = JsonConvert.DeserializeObject<HighscoreInfo[]>(result);
+            foreach (var elem in output)
+            {
+                Instantiate(highscorePanelPrefab, canvas)
+                    .GetComponent<HighscorePanel>()
+                    .Set(elem, myId);
+            }
+
+            SetStatus("", "");
         }
+        catch (System.Exception e)
+        {
+            SetStatus(e.Message, e.StackTrace);
+        }
+    }
+
+    private void SetStatus(string main, string additional)
+    {
+        error.text = main;
+        additionalError.text = additional;
     }
     /*
     private IEnumerator SendHighscore()
