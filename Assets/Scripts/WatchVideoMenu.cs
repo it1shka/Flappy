@@ -6,9 +6,8 @@ using UnityEngine.Advertisements;
 public class WatchVideoMenu : MonoBehaviour, IUnityAdsListener
 {
     public GameObject defaultUI;
-    public float invokeDeathTime = 3f;
-
-    private const string myAppId = "3569993";
+    // google play id: 3731203
+    private const string myAppId = "3731203";
     public string adsType = "rewardedVideo";
     public Button button;
 
@@ -25,6 +24,7 @@ public class WatchVideoMenu : MonoBehaviour, IUnityAdsListener
         button.onClick.AddListener(WatchAdd);
         Advertisement.AddListener(this);
         Advertisement.Initialize(myAppId, false);
+        print("Started initializing ads...");
     }
 
     public void InvokeDeath()

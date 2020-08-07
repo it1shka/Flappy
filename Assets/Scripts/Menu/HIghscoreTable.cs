@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 using TMPro;
 
 //IL2CPP does not support Newtonsoft.Json... Blyat
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using System.Web;
 
 public class HighscoreTable : MonoBehaviour
@@ -68,7 +68,8 @@ public class HighscoreTable : MonoBehaviour
 
         if (sendHighscore)
         {
-            var serializedObj = JsonConvert.SerializeObject(highscoreInfo);
+            //var serializedObj = JsonConvert.SerializeObject(highscoreInfo);
+            var serializedObj = JsonUtility.ToJson(highscoreInfo);
             var p = UnityWebRequest.Post(url, serializedObj);
 
             yield return p.SendWebRequest();
@@ -93,8 +94,9 @@ public class HighscoreTable : MonoBehaviour
             var result = r.downloadHandler.text;
             print($"Got a json pack: {result}");
 
-            var output = JsonConvert.DeserializeObject<HighscoreInfo[]>(result);
-            foreach (var elem in output)
+            //var output = JsonConvert.DeserializeObject<HighscoreInfo[]>(result);
+            var output = JsonUtility.FromJson<HighscoreInfoOutput>(result);
+            foreach (var elem in output.infos)
             {
                 Instantiate(highscorePanelPrefab, canvas)
                     .GetComponent<HighscorePanel>()
@@ -157,10 +159,9 @@ public class HighscoreInfo
         id = "";
     }
 }
-/*
+
 [System.Serializable]
 public class HighscoreInfoOutput
 {
-    public string info;
-    public string _id;
-}*/
+    public HighscoreInfo[] infos;
+}
